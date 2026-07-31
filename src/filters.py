@@ -17,3 +17,17 @@ def search_accounts(
         for account in accounts
         if normalised_term in account.username.lower()
     ]
+
+def filter_by_status(
+    accounts: list[FollowingAccount],
+    status: str,
+) -> list[FollowingAccount]:
+    """Return accounts with the requested review status."""
+
+    normalised_status = status.strip().lower()
+
+    return [
+        account
+        for account in accounts
+        if account.status.lower() == normalised_status
+    ]

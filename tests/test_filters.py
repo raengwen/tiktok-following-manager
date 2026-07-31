@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from src.filters import search_accounts
+from src.filters import filter_by_status
 from src.models import FollowingAccount
 
 
@@ -40,3 +41,57 @@ def test_empty_search_returns_all_accounts_in_new_list() -> None:
 
     assert results == accounts
     assert results is not accounts
+
+def test_filter_by_status_returns_matching_accounts() -> None:
+    accounts = [
+        FollowingAccount(
+            username="alice",
+            date_followed=datetime(2026, 1, 1),
+            status="keep",
+        ),
+        FollowingAccount(
+            username="bob",
+            date_followed=datetime(2026, 1, 1),
+            status="remove",
+        ),
+        FollowingAccount(
+            username="charlie",
+            date_followed=datetime(2026, 1, 1),
+            status="keep",
+        ),
+    ]
+
+    results = filter_by_status(accounts, "keep")
+
+    assert [account.username for account in results] == [
+        "alice",
+        "charlie",
+    ]
+
+
+def test_filter_by_status_is_case_insensitive() -> None:
+    accounts = [
+        FollowingAccount(
+            username="alice",
+            date_followed=datetime(2026, 1, 1),
+            status="keep",
+        ),
+    ]
+
+    results = filter_by_status(accounts, "KEEP")
+
+    assert results == accounts
+
+
+def test_filter_by_status_returns_empty_list_for_no_matches() -> None:
+    accounts = [
+        FollowingAccount(
+            username="alice",
+            date_followed=datetime(2026, 1, 1),
+            status="undecided",
+        ),
+    ]
+
+    results = filter_by_status(accounts, "remove")
+
+    assert results == []
